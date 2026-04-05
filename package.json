@@ -1,0 +1,79 @@
+{
+  "name": "repissue",
+  "version": "0.1.0",
+  "description": "Pack GitHub Issues & PRs into a single AI-ready context file",
+  "type": "module",
+  "bin": {
+    "repissue": "./bin/repissue.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node bin/repissue.js",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:integration": "vitest run --include 'tests/integration/**/*.test.ts'",
+    "prepublishOnly": "npm run lint && npm run typecheck && npm run test && npm run build"
+  },
+  "keywords": [
+    "github",
+    "issues",
+    "pull-requests",
+    "ai",
+    "llm",
+    "context",
+    "repomix",
+    "cli",
+    "agent",
+    "codegen"
+  ],
+  "author": "repissue contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/simohypers/repissue.git"
+  },
+  "homepage": "https://github.com/simohypers/repissue#readme",
+  "bugs": {
+    "url": "https://github.com/simohypers/repissue/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "commander": "^14.0.3",
+    "handlebars": "^4.7.9",
+    "picocolors": "^1.1.1",
+    "picospinner": "^3.0.0",
+    "tiktoken": "^1.0.22",
+    "tinypool": "^2.1.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "@typescript-eslint/eslint-plugin": "^8.58.0",
+    "@typescript-eslint/parser": "^8.58.0",
+    "@vitest/coverage-v8": "^4.1.2",
+    "eslint": "^8.57.1",
+    "prettier": "^3.8.1",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.2"
+  }
+}
