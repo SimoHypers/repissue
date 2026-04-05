@@ -2,7 +2,7 @@
 
 > Pack GitHub Issues & Pull Requests into a single AI-ready context file.
 
-[![CI](https://github.com/simohypers/repissue/actions/workflows/ci.yml/badge.svg)](https://github.com/simohypers/repissue/actions/workflows/ci.yml)
+[![CI](https://github.com/your-username/repissue/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/repissue/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/repissue.svg)](https://www.npmjs.com/package/repissue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js ≥ 18](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org)
@@ -81,7 +81,10 @@ Requires **Node.js ≥ 18**.
 npx repissue facebook/react
 
 # Authenticate for private repos (or to raise the rate limit to 5,000 req/hr)
+# bash / zsh (macOS, Linux)
 GITHUB_TOKEN=ghp_xxx npx repissue my-org/private-repo
+# PowerShell (Windows)
+$env:GITHUB_TOKEN="ghp_xxx"; npx repissue my-org/private-repo
 
 # Print to stdout instead of writing a file
 npx repissue owner/repo --stdout
@@ -407,15 +410,33 @@ Drop `repissue-output.md` into your workspace and reference it in your chat:
 
 For any repo with more than a handful of issues, set `GITHUB_TOKEN`:
 
+**bash / zsh (macOS, Linux)**
 ```bash
-# Recommended: environment variable (never commits to source control)
+# Persist for the session
 export GITHUB_TOKEN=ghp_your_token_here
 npx repissue owner/repo
 
-# One-shot: inline for the current command only
+# One-shot inline
 GITHUB_TOKEN=ghp_xxx npx repissue owner/repo
+```
 
-# Via CLI flag (avoid in scripts — visible in process list)
+**PowerShell (Windows)**
+```powershell
+# Persist for the session
+$env:GITHUB_TOKEN="ghp_your_token_here"
+npx repissue owner/repo
+
+# One-shot inline
+$env:GITHUB_TOKEN="ghp_xxx"; npx repissue owner/repo
+```
+
+**Command Prompt (Windows)**
+```cmd
+set GITHUB_TOKEN=ghp_xxx && npx repissue owner/repo
+```
+
+**Any platform — via CLI flag** (avoid in scripts, token is visible in process list)
+```bash
 npx repissue owner/repo --token ghp_xxx
 ```
 
