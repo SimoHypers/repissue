@@ -47,9 +47,9 @@ jobs:
   integration:
     name: Integration tests
     runs-on: ubuntu-latest
-    # secrets context is not available in job-level if conditions — use
-    # github.event_name or always run and let the test handle missing auth.
     if: github.event_name == 'push' || github.event_name == 'pull_request'
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
     steps:
       - name: Checkout
@@ -79,5 +79,3 @@ jobs:
 
       - name: Integration tests
         run: npm run test:integration
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

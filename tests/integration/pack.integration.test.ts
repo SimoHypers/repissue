@@ -7,7 +7,7 @@
  *     over time, so we assert structure rather than exact counts).
  *
  * Run conditions:
- *   - In CI, set the GITHUB_TOKEN secret to get 5,000 req/hr and stable runs.
+ *   - In CI, set the GH_TOKEN secret to get 5,000 req/hr and stable runs.
  *
  * These tests intentionally do NOT mock anything — the whole point is to
  * exercise the real fetch → filter → generate → metrics pipeline.
