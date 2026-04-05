@@ -21,8 +21,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "tsc --project tsconfig.build.json",
+    "dev": "tsc --project tsconfig.build.json --watch",
     "start": "node bin/repissue.js",
     "lint": "eslint src --ext .ts",
     "typecheck": "tsc --noEmit",

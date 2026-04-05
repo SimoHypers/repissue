@@ -45,9 +45,9 @@ jobs:
   integration:
     name: Integration tests
     runs-on: ubuntu-latest
-    # Only run when the secret is available — forks and Dependabot PRs will
-    # skip this job gracefully rather than failing with a 401.
-    if: ${{ secrets.GITHUB_TOKEN != '' }}
+    # secrets context is not available in job-level if conditions — use
+    # github.event_name or always run and let the test handle missing auth.
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
 
     steps:
       - name: Checkout
