@@ -67,6 +67,16 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Verify token is set
+        run: |
+          if [ -z "$GH_TOKEN_CHECK" ]; then
+            echo "❌ GH_TOKEN secret is not set or is empty — integration tests will run unauthenticated"
+          else
+            echo "✅ GH_TOKEN secret is present (length: ${#GH_TOKEN_CHECK})"
+          fi
+        env:
+          GH_TOKEN_CHECK: ${{ secrets.GH_TOKEN }}
+
       - name: Integration tests
         run: npm run test:integration
         env:

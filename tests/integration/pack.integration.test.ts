@@ -1,7 +1,7 @@
 /**
  * Integration tests — these call the real GitHub API.
  *
- * Target repo: octocat/Hello-World
+ * Target repo: elysiajs/elysia-jwt
  *   - GitHub's own fixture repo, exists since 2011, will never be deleted.
  *   - Has a small, stable set of open issues and PRs (counts may change slightly
  *     over time, so we assert structure rather than exact counts).
@@ -18,7 +18,7 @@ import { pack } from '../../src/core/packager.ts';
 import { defaultConfig } from '../../src/config/defaultConfig.ts';
 import type { RepissueConfigMerged } from '../../src/config/configSchema.ts';
 
-const FIXTURE_REPO = 'octocat/Hello-World';
+const FIXTURE_REPO = 'elysiajs/elysia-jwt';
 
 // In Vitest 4 the timeout is the second argument to it(), not a describe option.
 const NETWORK_TIMEOUT = 30_000;
@@ -47,7 +47,7 @@ const getResult = () => {
   return resultPromise;
 };
 
-describe('integration: pack() against octocat/Hello-World', () => {
+describe('integration: pack() against elysiajs/elysia-jwt', () => {
 
   // ── Pack result shape ─────────────────────────────────────────────────────
 
