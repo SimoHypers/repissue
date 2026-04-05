@@ -1,4 +1,4 @@
-# repissue
+# repissue 📋
 
 > Pack GitHub Issues & Pull Requests into a single AI-ready context file.
 
@@ -22,14 +22,13 @@ npx repissue facebook/react
 - [Why repissue?](#why-repissue)
 - [Installation](#installation)
 - [Quickstart](#quickstart)
-- [Full Flag Reference](#full-flag-reference)
+- [CLI Flags](#cli-flags)
 - [Configuration File](#configuration-file)
 - [Output Styles](#output-styles)
 - [Composing with Repomix](#composing-with-repomix)
 - [Using with AI Agents](#using-with-ai-agents)
 - [Rate Limits & Authentication](#rate-limits--authentication)
 - [Security Scanning](#security-scanning)
-- [Contributing](#contributing)
 - [License](#license)
 
 ---
@@ -45,26 +44,26 @@ When you feed a codebase to an AI agent with Repomix, the agent knows everything
 repissue is the complementary tool. Together they give an agent complete situational awareness:
 
 ```
-repomix output  →  everything the code *is*
-repissue output →  everything that needs to *change*
+repomix output  →  everything the code is
+repissue output →  everything that needs to change
 ```
 
 ---
 
 ## Installation
 
-**Zero-install via npx (recommended):**
+**Zero-install via npx (recommended)**
 ```bash
 npx repissue owner/repo
 ```
 
-**Global install:**
+**Global install**
 ```bash
 npm install -g repissue
 repissue owner/repo
 ```
 
-**As a project dependency:**
+**As a project dependency**
 ```bash
 npm install --save-dev repissue
 ```
@@ -79,26 +78,24 @@ Requires **Node.js ≥ 18**.
 # Fetch open issues and PRs from any public repo
 npx repissue facebook/react
 
-# Authenticate for private repos (or to raise the rate limit to 5,000 req/hr)
-# bash / zsh (macOS, Linux)
-GITHUB_TOKEN=ghp_xxx npx repissue my-org/private-repo
-# PowerShell (Windows)
-$env:GITHUB_TOKEN="ghp_xxx"; npx repissue my-org/private-repo
-
-# Print to stdout instead of writing a file
-npx repissue owner/repo --stdout
+# Authenticate for private repos (raises rate limit to 5,000 req/hr)
+GITHUB_TOKEN=ghp_xxx npx repissue my-org/private-repo   # bash/zsh
+$env:GITHUB_TOKEN="ghp_xxx"; npx repissue my-org/repo   # PowerShell
 
 # XML output — pairs perfectly with a Repomix XML snapshot
 npx repissue owner/repo --style xml
 
-# Issues only, skipping PRs
+# Issues only, no PRs
 npx repissue owner/repo --no-prs
 
 # Include PRs merged in the last 14 days
 npx repissue owner/repo --include-merged-days 14
 
-# Split into multiple files if output exceeds 500 KB
-npx repissue owner/repo --split-output 512000
+# Print to stdout
+npx repissue owner/repo --stdout
+
+# Append directly to an existing Repomix output
+repomix && npx repissue owner/repo --append-to repomix-output.xml
 ```
 
 After running, repissue prints a summary:
@@ -113,68 +110,63 @@ After running, repissue prints a summary:
   → repissue-output.md
 ```
 
+> [!WARNING]
+> **Always set a `GITHUB_TOKEN` before running repissue.**
+>
+> Without a token, GitHub allows only **60 requests per hour** — shared across your entire machine. A single run against a repo with 50+ issues will exhaust that quota immediately, locking you out for up to an hour. With a token, the limit rises to **5,000 requests per hour**, which is enough for any repo.
+>
+> ```bash
+> export GITHUB_TOKEN=ghp_your_token_here   # bash/zsh
+> $env:GITHUB_TOKEN="ghp_your_token_here"   # PowerShell
+> ```
+>
+> See [Rate Limits & Authentication](#rate-limits--authentication) for full setup instructions.
+
 ---
 
-## Full Flag Reference
+## CLI Flags
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `<owner/repo>` | _(required)_ | GitHub repository to fetch, e.g. `facebook/react` |
+| `<owner/repo>` | *(required)* | GitHub repository, e.g. `facebook/react` |
 | `-o, --output <path>` | auto | Output file path. Defaults to `repissue-output.{md,txt,xml}` based on style |
 | `--style <format>` | `markdown` | Output style: `markdown`, `plain`, or `xml` |
-| `--token <token>` | `$GITHUB_TOKEN` | GitHub personal access token. Falls back to the `GITHUB_TOKEN` env var |
+| `--token <token>` | `$GITHUB_TOKEN` | GitHub personal access token |
 | `--no-issues` | — | Skip issues; output PRs only |
 | `--no-prs` | — | Skip PRs; output issues only |
 | `--include-merged-days <n>` | — | Also include PRs merged within the last N days |
 | `--include-closed-days <n>` | — | Also include issues closed within the last N days |
-| `--label-priority <labels>` | `bug,security,P0` | Comma-separated labels to float to the top of the output |
-| `--max-comments <n>` | `50` | Maximum number of comments to include per issue or PR |
-| `--no-bots` | — | Filter out all bot-authored comments (default: on when `ignoreBots: true` in config) |
-| `--header-text <text>` | — | Custom text to embed at the top of the output file |
-| `-c, --config <path>` | auto | Path to `repissue.config.json`. Auto-detected in the current directory if not specified |
+| `--label-priority <labels>` | `bug,security,P0` | Comma-separated labels to float to the top |
+| `--max-comments <n>` | `50` | Maximum comments to include per issue or PR |
+| `--no-bots` | — | Filter out all bot-authored comments |
+| `--header-text <text>` | — | Custom text embedded at the top of the output |
+| `-c, --config <path>` | auto | Path to `repissue.config.json` |
 | `--init` | — | Create a starter `repissue.config.json` in the current directory |
 | `--stdout` | — | Print output to stdout instead of writing a file |
-| `--append-to <file>` | — | Append the issues/PRs block to an existing file (e.g. a Repomix output). Cannot be combined with `--stdout` or `--split-output` |
-| `--split-output <bytes>` | — | Split output into multiple numbered files if it exceeds N bytes. Cannot be combined with `--stdout` or `--append-to` |
-| `--copy` | — | Copy output to clipboard after writing. Uses `pbcopy` (macOS), `clip` (Windows), or `xclip`/`xsel` (Linux) |
+| `--append-to <file>` | — | Append the issues/PRs block to an existing file |
+| `--split-output <bytes>` | — | Split output into multiple files if it exceeds N bytes |
+| `--copy` | — | Copy output to clipboard after writing |
 | `--security-check` | — | Warn if the output appears to contain secrets or credentials |
 | `--verbose` | — | Enable verbose logging |
 | `--quiet` | — | Suppress all output except errors |
-| `--version` | — | Print version and exit |
 
-### Flag notes
+### A few notes
 
-**`--style` and output file extension**
+**File extension auto-selection** — when `--output` is not specified, repissue picks the right extension for the chosen style: `.md` for markdown, `.txt` for plain, `.xml` for xml. If you pass `--output` explicitly, the extension is left as-is.
 
-When `--output` is not specified, repissue automatically picks the right file extension for the chosen style:
+**`--append-to` and `--split-output`** cannot be combined with `--stdout`, and cannot be combined with each other.
 
-| Style | Extension |
-|-------|-----------|
-| `markdown` | `.md` |
-| `plain` | `.txt` |
-| `xml` | `.xml` |
-
-If you pass `--output` explicitly, the extension is left exactly as you wrote it.
-
-**`--no-bots` vs config**
-
-`--no-bots` is a one-shot CLI override. For permanent bot filtering, set `ignoreBots: true` in `repissue.config.json` (it is `true` by default).
-
-**`--copy` with `--split-output`**
-
-When output is split into multiple files, `--copy` is silently skipped with a warning. Copy the individual files manually if needed.
+**`--copy` with `--split-output`** — when output is split into multiple files, `--copy` is skipped with a warning.
 
 ---
 
 ## Configuration File
 
-Run `repissue --init` to create a starter `repissue.config.json` in the current directory:
+Run `repissue --init` to generate a starter config in the current directory:
 
 ```bash
 npx repissue --init
 ```
-
-This creates:
 
 ```json
 {
@@ -211,36 +203,28 @@ CLI flags always take precedence over the config file.
 |-------|------|---------|-------------|
 | `filePath` | string | `"repissue-output.md"` | Output file path |
 | `style` | `"markdown"` \| `"plain"` \| `"xml"` | `"markdown"` | Output format |
-| `fileSummary` | boolean | `true` | Include a short "what is this file" summary section at the top |
-| `headerText` | string | — | Optional custom text inserted at the very top of the output |
+| `fileSummary` | boolean | `true` | Include a short summary section at the top of the file |
+| `headerText` | string | — | Optional custom text inserted at the very top |
 
 #### `github`
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `token` | string | — | GitHub personal access token. Prefer the `GITHUB_TOKEN` env var over storing a token in the config file |
+| `token` | string | — | GitHub PAT. Prefer the `GITHUB_TOKEN` env var over storing a token in the file |
 | `includeIssues` | boolean | `true` | Fetch and include open issues |
 | `includePRs` | boolean | `true` | Fetch and include open pull requests |
 | `includeMergedDays` | number | — | Include PRs merged within the last N days |
 | `includeClosedDays` | number | — | Include issues closed within the last N days |
-| `labelPriority` | string[] | `["bug","security","P0"]` | Labels whose items appear first in the output. Order matters: the first label in the list has the highest priority |
-| `ignoreBots` | boolean | `true` | Filter out issues, PRs, and comments authored by bot accounts |
-| `knownBots` | string[] | `["dependabot[bot]","renovate[bot]","github-actions[bot]"]` | Additional bot logins to filter. Any login ending in `[bot]` is always treated as a bot regardless of this list |
-| `maxCommentsPerItem` | number | `50` | Maximum number of comments to include per issue or PR, after noise filtering |
+| `labelPriority` | string[] | `["bug","security","P0"]` | Labels whose items appear first. Order matters — first label = highest priority |
+| `ignoreBots` | boolean | `true` | Filter out issues, PRs, and comments by bot accounts |
+| `knownBots` | string[] | `["dependabot[bot]",…]` | Extra bot logins to filter. Any login ending in `[bot]` is always treated as a bot |
+| `maxCommentsPerItem` | number | `50` | Maximum comments per issue or PR, after noise filtering |
 
 #### `security`
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `enableCheck` | boolean | `false` | Scan output for patterns that look like secrets or credentials and warn before writing |
-
-### Config file search
-
-repissue looks for `repissue.config.json` in the current working directory. Pass `-c <path>` to use a different location:
-
-```bash
-repissue owner/repo -c ./config/repissue.config.json
-```
+| `enableCheck` | boolean | `false` | Scan output for secret-like patterns and warn before writing |
 
 ---
 
@@ -248,58 +232,74 @@ repissue owner/repo -c ./config/repissue.config.json
 
 ### `markdown` (default)
 
-Structured Markdown — readable by humans, ideal for LLMs that understand Markdown formatting.
+Structured Markdown with collapsible `<details>` blocks per issue and PR. Readable by humans, ideal for LLMs. Here's what the output looks like when rendered:
 
-```markdown
-# repissue Output
+---
 
-> **Generated:** 2026-04-04T10:00:00.000Z
-> **Repository:** facebook/react
-> **Open Issues:** 47 | **Open PRs:** 12
+> **Example output** *(rendered)*
 
-## Open Issues (47)
+#### 📋 repissue — `facebook/react`
 
-### [bug][P0] #312 — Auth token not refreshed on 401
+| | |
+|---|---|
+| 🕐 **Generated** | 2026-04-03T14:22:00Z |
+| 📁 **Repository** | `facebook/react` |
+| 🐛 **Open Issues** | 47 |
+| 🔀 **Open PRs** | 12 |
 
-**Opened:** 2026-03-15 | **Author:** alice | **Comments:** 8
-**Linked PRs / Closes:** #318
+**🐛 Issues (47)**
 
-When the access token expires mid-session, the client throws an unhandled
-promise rejection rather than refreshing…
+<details>
+<summary><strong>⚠️ <code>bug</code> &nbsp;#312</strong> — Auth token not refreshed on 401 &nbsp; <em>📅 2026-03-15 · 👤 alice · 💬 8</em></summary>
 
-**Comments (3 shown, 5 filtered as noise):**
+🔗 **URL:** https://github.com/facebook/react/issues/312  
+🔁 **Closes:** #318
 
-- **bob** (2026-03-16): Confirmed on v2.x as well.
-- **alice** (2026-03-17): Root cause is in `refreshToken()`.
-```
+When the access token expires mid-session, the client throws an unhandled promise rejection rather than refreshing…
+
+**💬 Comments (3 shown, 5 filtered)**
+
+> 👤 **bob** · 📅 2026-03-16
+>
+> Confirmed on v2.x as well.
+
+> 👤 **alice** · 📅 2026-03-17
+>
+> Root cause is in `refreshToken()` — the promise chain drops the error.
+
+</details>
+
+---
 
 ### `plain`
 
-Plain text with ASCII section dividers — useful for older toolchains or when you want to avoid any Markdown interpretation.
+Plain text with ASCII dividers — no Markdown interpretation, safe for any toolchain.
 
 ```
-repissue Output
-Generated: 2026-04-04T10:00:00.000Z
-Repository: facebook/react
-Open Issues: 47 | Open PRs: 12
+📋 repissue — facebook/react
+🕐 Generated : 2026-04-03T14:22:00Z
+🐛 Issues    : 47 open
+🔀 PRs       : 12 open
 
 ================================================================================
-OPEN ISSUES (47)
+🐛 ISSUES (47)
 ================================================================================
 
-[bug, P0] #312 — Auth token not refreshed on 401
-Opened: 2026-03-15 | Author: alice | Comments: 8
+  #312 — Auth token not refreshed on 401
+  ⚠️ bug
+  📅 Opened  : 2026-03-15
+  👤 Author  : alice
+  🔗 URL     : https://github.com/facebook/react/issues/312
 ```
 
 ### `xml`
 
-Structured XML — well-suited for systematic parsing and for feeding into tools that already consume XML (such as a Repomix XML output).
+Structured XML — well-suited for programmatic parsing and for feeding into tools that already consume XML (like Repomix's XML output).
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <repissue>
   <metadata>
-    <generated_at>2026-04-04T10:00:00.000Z</generated_at>
     <repository>facebook/react</repository>
     <open_issues>47</open_issues>
     <open_prs>12</open_prs>
@@ -307,9 +307,7 @@ Structured XML — well-suited for systematic parsing and for feeding into tools
   <issues count="47">
     <issue number="312">
       <title>Auth token not refreshed on 401</title>
-      <state>open</state>
-      <author>alice</author>
-      …
+      ...
     </issue>
   </issues>
 </repissue>
@@ -319,46 +317,34 @@ Structured XML — well-suited for systematic parsing and for feeding into tools
 
 ## Composing with Repomix
 
-repissue is designed to be used alongside [Repomix](https://github.com/yamadashy/repomix). Repomix packs the *code*; repissue packs the *live project state*. Feed both to an agent and it has complete context.
+repissue is designed to be used alongside [Repomix](https://github.com/yamadashy/repomix). Repomix packs the *code*; repissue packs the *live project state*. Feed both to an agent for complete context.
 
-### Option 1 — Two separate files
+### Two separate files
 
 ```bash
-# Pack the codebase
 repomix
-
-# Pack issues and PRs
 npx repissue owner/repo
 
-# Feed both to an agent
 claude --file repomix-output.xml --file repissue-output.xml \
   "Fix the bug described in issue #312"
 ```
 
-### Option 2 — Append to a single file (recommended for XML)
+### Appended into one file *(recommended for XML)*
 
-The `--append-to` flag inserts a `<repissue_append>` block directly before the closing root tag of an existing XML file, keeping the result well-formed:
+The `--append-to` flag inserts a `<repissue_append>` block before the closing root tag of an existing XML file, keeping the document well-formed:
 
 ```bash
-repomix                                                 # creates repomix-output.xml
-npx repissue owner/repo --append-to repomix-output.xml # appends inside </repomix>
+repomix                                                  # → repomix-output.xml
+npx repissue owner/repo --append-to repomix-output.xml  # appends inside </repomix>
 
-# One file — full context
-claude --file repomix-output.xml "Implement the feature requested in issue #88"
+claude --file repomix-output.xml "Implement the feature in issue #88"
 ```
 
-For Markdown output, `--append-to` appends a `## repissue — Issues & PRs` section to the end of the target file:
+For Markdown, `--append-to` appends a `## repissue` section to the end of the file:
 
 ```bash
 repomix --style markdown
 npx repissue owner/repo --append-to repomix-output.md
-```
-
-### Option 3 — Pipe to stdout
-
-```bash
-# Stream repissue output directly into another tool
-npx repissue owner/repo --stdout | my-agent-tool --context -
 ```
 
 ---
@@ -368,7 +354,6 @@ npx repissue owner/repo --stdout | my-agent-tool --context -
 ### Claude
 
 ```bash
-# Standalone repissue context
 claude --file repissue-output.md "What are the most critical open bugs?"
 
 # Combined with Repomix
@@ -377,8 +362,6 @@ claude --file repomix-output.xml "Fix the highest-priority open issue"
 ```
 
 ### GitHub Actions
-
-Automatically generate a fresh context file before each agent run:
 
 ```yaml
 - name: Generate issue context
@@ -392,7 +375,7 @@ Automatically generate a fresh context file before each agent run:
 
 ### Cursor / IDE chat
 
-Drop `repissue-output.md` into your workspace and reference it in your chat:
+Drop `repissue-output.md` into your workspace and reference it in chat:
 
 ```
 @repissue-output.md  What bugs are blocking the v2.0 release?
@@ -400,77 +383,84 @@ Drop `repissue-output.md` into your workspace and reference it in your chat:
 
 ---
 
-## Rate Limits & Authentication
+## Rate Limits & Authentication 🔑
 
-| Mode | Rate limit |
-|------|-----------|
-| Unauthenticated | 60 requests/hour |
-| Authenticated (`GITHUB_TOKEN`) | 5,000 requests/hour |
+| Mode | Limit | Reality |
+|------|-------|---------|
+| ❌ Unauthenticated | 60 requests / hour | Exhausted by a single mid-sized repo. Cooldown is up to **1 hour**. |
+| ✅ Authenticated (`GITHUB_TOKEN`) | 5,000 requests / hour | Enough for any repo, including large ones with hundreds of issues. |
 
-For any repo with more than a handful of issues, set `GITHUB_TOKEN`:
+GitHub's unauthenticated limit is shared across all processes on your machine using the same IP address. Running repissue without a token against a repo with 50+ issues will hit the cap in seconds — and you won't be able to run it again until the hour resets. **A token is not optional in practice.**
 
-**bash / zsh (macOS, Linux)**
+### Setting up a token
+
+**1. Create a token**
+
+GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token.
+
+- **Public repos:** no scopes needed.
+- **Private repos:** select the `repo` scope.
+
+**2. Set the environment variable**
+
 ```bash
-# Persist for the session
+# bash/zsh — add to ~/.bashrc or ~/.zshrc to make it permanent
 export GITHUB_TOKEN=ghp_your_token_here
 npx repissue owner/repo
 
-# One-shot inline
-GITHUB_TOKEN=ghp_xxx npx repissue owner/repo
-```
-
-**PowerShell (Windows)**
-```powershell
-# Persist for the session
+# PowerShell
 $env:GITHUB_TOKEN="ghp_your_token_here"
 npx repissue owner/repo
-
-# One-shot inline
-$env:GITHUB_TOKEN="ghp_xxx"; npx repissue owner/repo
 ```
 
-**Command Prompt (Windows)**
-```cmd
-set GITHUB_TOKEN=ghp_xxx && npx repissue owner/repo
-```
+You can also pass it inline for a one-off run, though the token will be visible in your process list:
 
-**Any platform — via CLI flag** (avoid in scripts, token is visible in process list)
 ```bash
 npx repissue owner/repo --token ghp_xxx
 ```
 
-**Creating a token:** Go to GitHub → Settings → Developer settings → Personal access tokens. For public repos, no scopes are required. For private repos, select the `repo` scope.
+Or store it in `repissue.config.json` — though the env var is strongly preferred to avoid accidentally committing credentials.
 
-When the rate limit is hit, repissue automatically waits and retries up to 3 times before giving up with a clear error message that includes the reset time.
+### What happens when the limit is hit
+
+repissue automatically waits and retries up to 3 times using the reset time from GitHub's response headers. If all retries are exhausted, it exits with a clear error message telling you exactly when the limit resets.
 
 ---
 
 ## Security Scanning
 
-repissue can warn you if the output contains patterns that look like secrets or credentials — useful when issue threads discuss environment configuration or paste log output.
-
-Enable it with `--security-check` or in your config:
+Enable with `--security-check` or in your config:
 
 ```json
-{
-  "security": {
-    "enableCheck": true
-  }
-}
+{ "security": { "enableCheck": true } }
 ```
 
-Detected pattern types include GitHub tokens, AWS access keys, API secret keys (`sk-` prefix), PEM private key headers, Slack tokens, Stripe keys, SendGrid API keys, and generic password/secret assignments.
+Detected patterns include: GitHub tokens, AWS access keys, API secret keys (`sk-` prefix), PEM private key headers, Slack tokens, Stripe keys, SendGrid API keys, and generic `password`/`secret` assignments.
 
-**Important:** repissue always writes the output file regardless of scan hits. It warns you so you can review and rotate credentials — it does not block or redact.
-
----
-
-## Contributing
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for dev setup, test commands, and PR guidelines.
+> **Note:** repissue always writes the output file regardless of scan hits. It warns you so you can review and rotate credentials — it does not block or redact content.
 
 ---
 
 ## License
 
-[MIT](./LICENSE)
+MIT License
+
+Copyright (c) 2026 repissue contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
