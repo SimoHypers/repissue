@@ -48,8 +48,12 @@ jobs:
     name: Integration tests
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: read
     env:
-      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout
@@ -66,16 +70,6 @@ jobs:
 
       - name: Build
         run: npm run build
-
-      - name: Verify token is set
-        run: |
-          if [ -z "$GH_TOKEN_CHECK" ]; then
-            echo "❌ GH_TOKEN secret is not set or is empty — integration tests will run unauthenticated"
-          else
-            echo "✅ GH_TOKEN secret is present (length: ${#GH_TOKEN_CHECK})"
-          fi
-        env:
-          GH_TOKEN_CHECK: ${{ secrets.GH_TOKEN }}
 
       - name: Integration tests
         run: npm run test:integration
