@@ -1,29 +1,40 @@
-export const plainTemplate = `repissue Output
+export const plainTemplate = `📋 repissue — {{repo}}
 {{#if headerText}}
 {{headerText}}
 {{/if}}
-Generated: {{generatedAt}}
-Repository: {{repo}}
-Open Issues: {{issueCount}} | Open PRs: {{prCount}}
+🕐 Generated : {{generatedAt}}
+📁 Repository: {{repo}}
+🐛 Issues    : {{issueCount}} open
+🔀 PRs       : {{prCount}} open
 
 ================================================================================
 {{#if issues}}
-OPEN ISSUES ({{issueCount}})
+🐛 ISSUES ({{issueCount}})
 ================================================================================
 
 {{#each issues}}
-[{{labelNames this.issue.labels}}] #{{this.issue.number}} — {{this.issue.title}}
-Opened: {{formatDate this.issue.created_at}} | Author: {{userLogin this.issue.user}} | Comments: {{this.issue.comments}}
-{{#if this.crossRefs.closes}}Closes: {{joinNumbers this.crossRefs.closes}}{{/if}}
-
-{{#if this.issue.body}}
-{{truncate this.issue.body 1000}}
+  #{{this.issue.number}} — {{this.issue.title}}
+  🏷️  {{labelNames this.issue.labels}}
+  📅 Opened  : {{formatDate this.issue.created_at}}
+  👤 Author  : {{userLogin this.issue.user}}
+  🔗 URL     : https://github.com/{{../repo}}/issues/{{this.issue.number}}
+  💬 Comments: {{this.issue.comments}}
+{{#if this.crossRefs.closes}}
+  🔁 Closes  : {{joinNumbers this.crossRefs.closes}}
+{{/if}}
+{{#if this.crossRefs.mentions}}
+  👀 Mentions: {{joinNumbers this.crossRefs.mentions}}
 {{/if}}
 
+{{#if this.issue.body}}
+{{stripImages (truncate this.issue.body 2000)}}
+{{/if}}
 {{#if this.comments}}
-Comments ({{this.comments.length}} shown{{#if this.filteredCommentCount}}, {{this.filteredCommentCount}} filtered{{/if}}):
+  💬 Comments ({{this.comments.length}} shown{{#if this.filteredCommentCount}}, {{this.filteredCommentCount}} filtered{{/if}})
 {{#each this.comments}}
-  [{{formatDate this.created_at}}] {{userLogin this.user}}: {{truncate this.body 500}}
+  👤 [{{formatDate this.created_at}}] {{userLogin this.user}}:
+  {{stripImages (truncate this.body 600)}}
+
 {{/each}}
 {{/if}}
 
@@ -32,22 +43,32 @@ Comments ({{this.comments.length}} shown{{#if this.filteredCommentCount}}, {{thi
 {{/each}}
 {{/if}}
 {{#if prs}}
-OPEN PULL REQUESTS ({{prCount}})
+🔀 PULL REQUESTS ({{prCount}})
 ================================================================================
 
 {{#each prs}}
-#{{this.pr.number}} — {{this.pr.title}}{{#if this.pr.draft}} [DRAFT]{{/if}}
-Author: {{userLogin this.pr.user}} | Base: {{this.pr.base.ref}} | +{{this.pr.additions}} / -{{this.pr.deletions}}
-{{#if this.crossRefs.closes}}Closes: {{joinNumbers this.crossRefs.closes}}{{/if}}
-
-{{#if this.pr.body}}
-{{truncate this.pr.body 1000}}
+  {{#if this.pr.draft}}🚧{{else}}🟢{{/if}} #{{this.pr.number}} — {{this.pr.title}}{{#if this.pr.draft}} [DRAFT]{{/if}}
+  👤 Author  : {{userLogin this.pr.user}}
+  🌿 Branch  : {{this.pr.base.ref}} ← {{this.pr.head.ref}}
+  📊 Diff    : ➕{{this.pr.additions}} ➖{{this.pr.deletions}} ({{this.pr.changed_files}} files)
+  📅 Updated : {{formatDate this.pr.updated_at}}
+  🔗 URL     : https://github.com/{{../repo}}/pull/{{this.pr.number}}
+{{#if this.pr.labels}}
+  🏷️  Labels  : {{labelNames this.pr.labels}}
+{{/if}}
+{{#if this.crossRefs.closes}}
+  🔁 Closes  : {{joinNumbers this.crossRefs.closes}}
 {{/if}}
 
+{{#if this.pr.body}}
+{{stripImages (truncate this.pr.body 2000)}}
+{{/if}}
 {{#if this.comments}}
-Comments ({{this.comments.length}} shown{{#if this.filteredCommentCount}}, {{this.filteredCommentCount}} filtered{{/if}}):
+  💬 Comments ({{this.comments.length}} shown{{#if this.filteredCommentCount}}, {{this.filteredCommentCount}} filtered{{/if}})
 {{#each this.comments}}
-  [{{formatDate this.created_at}}] {{userLogin this.user}}: {{truncate this.body 500}}
+  👤 [{{formatDate this.created_at}}] {{userLogin this.user}}:
+  {{stripImages (truncate this.body 600)}}
+
 {{/each}}
 {{/if}}
 

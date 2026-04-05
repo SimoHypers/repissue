@@ -81,7 +81,8 @@ describe('generateAppendBlock — markdown', () => {
 
   it('renders label badges', () => {
     const block = generateAppendBlock(makeContext(), 'markdown');
-    expect(block).toContain('[bug]');
+    // Labels are now rendered as: ⚠️ `bug`
+    expect(block).toContain('`bug`');
   });
 
   it('includes cross-reference mentions', () => {

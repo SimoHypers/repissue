@@ -45,7 +45,8 @@ describe('generateOutput — markdown', () => {
 
   it('renders label badges', () => {
     const output = generateOutput(makeContext());
-    expect(output).toContain('[bug]');
+    // Labels are now rendered as: ⚠️ `bug`
+    expect(output).toContain('`bug`');
   });
 
   it('renders cross-reference mentions', () => {
@@ -65,7 +66,8 @@ describe('generateOutput — markdown', () => {
 
   it('shows filtered comment count', () => {
     const output = generateOutput(makeContext());
-    expect(output).toContain('2 filtered as noise');
+    // Wording is now "2 filtered" (without "as noise" suffix)
+    expect(output).toContain('2 filtered');
   });
 
   it('renders the generated date', () => {

@@ -2,85 +2,100 @@
 // Kept as a plain string (not a .hbs file) so it ships inside the compiled JS
 // with no extra file I/O at runtime.
 
-export const markdownTemplate = `# repissue Output
+export const markdownTemplate = `# 📋 repissue — \`{{repo}}\`
 {{#if headerText}}
-{{headerText}}
-
+> {{headerText}}
+>
 {{/if}}
-> **Generated:** {{generatedAt}}
-> **Repository:** {{repo}}
-> **Open Issues:** {{issueCount}} | **Open PRs:** {{prCount}}
-
----
+| | |
+|---|---|
+| 🕐 **Generated** | {{generatedAt}} |
+| 📁 **Repository** | [\`{{repo}}\`](https://github.com/{{repo}}) |
+| 🐛 **Open Issues** | {{issueCount}} |
+| 🔀 **Open PRs** | {{prCount}} |
 
 {{#if fileSummary}}
-## File Summary
+> 📦 **What is this file?** A packed snapshot of open issues and pull requests for \`{{repo}}\`,
+> structured for AI consumption. Feed it alongside a Repomix code snapshot for complete
+> repository awareness.
 
-This file is a packed snapshot of open issues and pull requests for \`{{repo}}\`,
-designed to be consumed by AI systems. Feed it alongside a Repomix code context
-file for full repository awareness.
+{{/if}}
+---
+{{#if issues}}
+
+## 🐛 Issues ({{issueCount}})
+
+{{#each issues}}
+<details>
+<summary><strong>{{labelBadges this.issue.labels}}#{{this.issue.number}}</strong> — {{this.issue.title}} &nbsp; <em>📅 {{formatDate this.issue.created_at}} · 👤 {{userLogin this.issue.user}} · 💬 {{this.issue.comments}}</em></summary>
+
+🔗 **URL:** https://github.com/{{../repo}}/issues/{{this.issue.number}}
+{{#if this.crossRefs.closes}}
+🔁 **Closes:** {{joinNumbers this.crossRefs.closes}}
+{{/if}}
+{{#if this.crossRefs.mentions}}
+👀 **Mentions:** {{joinNumbers this.crossRefs.mentions}}
+{{/if}}
 
 ---
 
-{{/if}}
-{{#if issues}}
-## Open Issues ({{issueCount}})
-
-{{#each issues}}
-### {{labelBadges this.issue.labels}}#{{this.issue.number}} — {{this.issue.title}}
-
-**Opened:** {{formatDate this.issue.created_at}} | **Author:** {{userLogin this.issue.user}} | **Comments:** {{this.issue.comments}}
-{{#if this.crossRefs.closes}}
-**Linked PRs / Closes:** {{joinNumbers this.crossRefs.closes}}
-{{/if}}
-{{#if this.crossRefs.mentions}}
-**Mentions:** {{joinNumbers this.crossRefs.mentions}}
-{{/if}}
-
 {{#if this.issue.body}}
-{{truncate this.issue.body 1000}}
+{{stripImages (truncate this.issue.body 2000)}}
 {{/if}}
-
 {{#if this.comments}}
-**Comments ({{this.comments.length}} shown{{#if this.filteredCommentCount}}, {{this.filteredCommentCount}} filtered as noise{{/if}}):**
+
+#### 💬 Comments ({{this.comments.length}} shown{{#if this.filteredCommentCount}}, {{this.filteredCommentCount}} filtered{{/if}})
 
 {{#each this.comments}}
-- **{{userLogin this.user}}** ({{formatDate this.created_at}}): {{truncate this.body 500}}
+> 👤 **{{userLogin this.user}}** · 📅 {{formatDate this.created_at}}
+>
+> {{stripImages (truncate this.body 600)}}
+
 {{/each}}
 {{/if}}
 
----
+</details>
 
 {{/each}}
 {{/if}}
 {{#if prs}}
-## Open Pull Requests ({{prCount}})
+
+---
+
+## 🔀 Pull Requests ({{prCount}})
 
 {{#each prs}}
-### #{{this.pr.number}} — {{this.pr.title}}{{#if this.pr.draft}} [draft]{{/if}}
+<details>
+<summary>{{#if this.pr.draft}}🚧{{else}}🟢{{/if}} <strong>#{{this.pr.number}}</strong> — {{this.pr.title}}{{#if this.pr.draft}} <em>[draft]</em>{{/if}} &nbsp; <em>👤 {{userLogin this.pr.user}} · 📅 {{formatDate this.pr.updated_at}}</em></summary>
 
-**Author:** {{userLogin this.pr.user}} | **Base:** {{this.pr.base.ref}} | **Updated:** {{formatDate this.pr.updated_at}}
-**Changed files:** {{this.pr.changed_files}} | **+{{this.pr.additions}} / -{{this.pr.deletions}}**
-{{#if this.crossRefs.closes}}
-**Closes:** {{joinNumbers this.crossRefs.closes}}
-{{/if}}
+🔗 **URL:** https://github.com/{{../repo}}/pull/{{this.pr.number}}
+🌿 **Branch:** \`{{this.pr.base.ref}}\` ← \`{{this.pr.head.ref}}\`
+📊 **Diff:** ➕{{this.pr.additions}} ➖{{this.pr.deletions}} across 📄 {{this.pr.changed_files}} file(s)
 {{#if this.pr.labels}}
-**Labels:** {{labelBadges this.pr.labels}}
+🏷️ **Labels:** {{labelBadges this.pr.labels}}
 {{/if}}
-
-{{#if this.pr.body}}
-{{truncate this.pr.body 1000}}
-{{/if}}
-
-{{#if this.comments}}
-**Comments ({{this.comments.length}} shown{{#if this.filteredCommentCount}}, {{this.filteredCommentCount}} filtered as noise{{/if}}):**
-
-{{#each this.comments}}
-- **{{userLogin this.user}}** ({{formatDate this.created_at}}): {{truncate this.body 500}}
-{{/each}}
+{{#if this.crossRefs.closes}}
+🔁 **Closes:** {{joinNumbers this.crossRefs.closes}}
 {{/if}}
 
 ---
+
+{{#if this.pr.body}}
+{{stripImages (truncate this.pr.body 2000)}}
+{{/if}}
+{{#if this.comments}}
+
+#### 💬 Comments ({{this.comments.length}} shown{{#if this.filteredCommentCount}}, {{this.filteredCommentCount}} filtered{{/if}})
+
+{{#each this.comments}}
+> 👤 **{{userLogin this.user}}** · 📅 {{formatDate this.created_at}}
+>
+> {{stripImages (truncate this.body 600)}}
+
+{{/each}}
+{{/if}}
+
+</details>
 
 {{/each}}
 {{/if}}

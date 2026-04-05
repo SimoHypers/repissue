@@ -2,7 +2,6 @@
 
 > Pack GitHub Issues & Pull Requests into a single AI-ready context file.
 
-[![CI](https://github.com/your-username/repissue/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/repissue/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/repissue.svg)](https://www.npmjs.com/package/repissue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js ≥ 18](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org)
