@@ -4,7 +4,7 @@
   "description": "Pack GitHub Issues & PRs into a single AI-ready context file",
   "type": "module",
   "bin": {
-    "repissue": "./bin/repissue.js"
+    "repissue": "bin/repissue.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -48,7 +48,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/simohypers/repissue.git"
+    "url": "git+https://github.com/simohypers/repissue.git"
   },
   "homepage": "https://github.com/simohypers/repissue#readme",
   "bugs": {
