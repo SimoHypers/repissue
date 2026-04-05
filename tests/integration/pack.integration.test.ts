@@ -1,7 +1,7 @@
 /**
  * Integration tests — these call the real GitHub API.
  *
- * Target repo: elysiajs/elysia-jwt
+ * Target repo: octocat/Hello-World
  *   - GitHub's own fixture repo, exists since 2011, will never be deleted.
  *   - Has a small, stable set of open issues and PRs (counts may change slightly
  *     over time, so we assert structure rather than exact counts).
@@ -20,23 +20,31 @@ import type { RepissueConfigMerged } from '../../src/config/configSchema.ts';
 
 const FIXTURE_REPO = 'elysiajs/elysia-jwt';
 
+// Debug: verify token is visible to the test process
+const tokenDebug = process.env['GITHUB_TOKEN'];
+console.log(`[debug] GITHUB_TOKEN in test process: ${tokenDebug ? `present (length: ${tokenDebug.length}, starts with: ${tokenDebug.slice(0, 4)})` : 'MISSING'}`);
+
 // In Vitest 4 the timeout is the second argument to it(), not a describe option.
 const NETWORK_TIMEOUT = 30_000;
 
-const makeIntegrationConfig = (): RepissueConfigMerged => ({
-  ...defaultConfig,
-  output: {
-    ...defaultConfig.output,
-    filePath: '', // stdout mode — no disk I/O
-  },
-  github: {
-    ...defaultConfig.github,
-    token: process.env['GITHUB_TOKEN'],
-    maxCommentsPerItem: 5,
-    includeMergedDays: undefined,
-    includeClosedDays: undefined,
-  },
-});
+const makeIntegrationConfig = (): RepissueConfigMerged => {
+  const token = process.env['GITHUB_TOKEN'];
+  console.log(`[debug] token passed to config: ${token ? `present (length: ${token.length})` : 'MISSING — will run unauthenticated'}`);
+  return {
+    ...defaultConfig,
+    output: {
+      ...defaultConfig.output,
+      filePath: '', // stdout mode — no disk I/O
+    },
+    github: {
+      ...defaultConfig.github,
+      token,
+      maxCommentsPerItem: 5,
+      includeMergedDays: undefined,
+      includeClosedDays: undefined,
+    },
+  };
+};
 
 // Single shared pack() call — lazy-init so the API is hit exactly once.
 let resultPromise: ReturnType<typeof pack> | null = null;
