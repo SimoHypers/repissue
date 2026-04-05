@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseCrossRefs, parseCrossRefsFromThread } from '../../../src/core/github/crossRefParse';
+import { parseCrossRefs, parseCrossRefsFromThread } from '../../../src/core/github/crossRefParse.js';
 
 describe('parseCrossRefs', () => {
   it('returns empty arrays for null body', () => {
@@ -50,7 +50,7 @@ describe('parseCrossRefs', () => {
 
   it('deduplicates repeated references', () => {
     const result = parseCrossRefs('fixes #42 and also fixes #42');
-    expect(result.closes.filter((n) => n === 42)).toHaveLength(1);
+    expect(result.closes.filter((n: number) => n === 42)).toHaveLength(1);
   });
 
   it('puts bare #N mentions in mentions (not closes)', () => {
