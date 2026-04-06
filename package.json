@@ -1,6 +1,6 @@
 {
   "name": "repissue",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Pack GitHub Issues & PRs into a single AI-ready context file",
   "type": "module",
   "bin": {
