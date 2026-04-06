@@ -11,6 +11,10 @@ import { RepissueError } from '../../shared/errorHandle.js';
 // These templates render only the issues/PRs sections — no file header,
 // no metadata preamble. They are designed to slot cleanly onto the end of
 // an existing Repomix (or other) output file.
+//
+// Note: the diff line is guarded by {{#if this.pr.changed_files}} because
+// the /pulls list endpoint does not return additions/deletions/changed_files.
+// Those fields default to 0, so showing "➕0 ➖0" would be misleading.
 
 const MARKDOWN_APPEND_TEMPLATE = `
 ---
@@ -57,7 +61,9 @@ const MARKDOWN_APPEND_TEMPLATE = `
 #### #{{this.pr.number}} — {{this.pr.title}}{{#if this.pr.draft}} [draft]{{/if}}
 
 **Author:** {{userLogin this.pr.user}} | **Base:** {{this.pr.base.ref}} | **Updated:** {{formatDate this.pr.updated_at}}
+{{#if this.pr.changed_files}}
 **Changed files:** {{this.pr.changed_files}} | **+{{this.pr.additions}} / -{{this.pr.deletions}}**
+{{/if}}
 {{#if this.crossRefs.closes}}
 **Closes:** {{joinNumbers this.crossRefs.closes}}
 {{/if}}
@@ -121,7 +127,7 @@ OPEN PULL REQUESTS ({{prCount}})
 
 {{#each prs}}
 #{{this.pr.number}} — {{this.pr.title}}{{#if this.pr.draft}} [DRAFT]{{/if}}
-Author: {{userLogin this.pr.user}} | Base: {{this.pr.base.ref}} | +{{this.pr.additions}} / -{{this.pr.deletions}}
+Author: {{userLogin this.pr.user}} | Base: {{this.pr.base.ref}}{{#if this.pr.changed_files}} | +{{this.pr.additions}} / -{{this.pr.deletions}}{{/if}}
 {{#if this.crossRefs.closes}}Closes: {{joinNumbers this.crossRefs.closes}}{{/if}}
 
 {{#if this.pr.body}}
@@ -197,9 +203,11 @@ const XML_APPEND_TEMPLATE = `
         <author>{{userLogin this.pr.user}}</author>
         <base_branch>{{this.pr.base.ref}}</base_branch>
         <head_branch>{{this.pr.head.ref}}</head_branch>
+        {{#if this.pr.changed_files}}
         <additions>{{this.pr.additions}}</additions>
         <deletions>{{this.pr.deletions}}</deletions>
         <changed_files>{{this.pr.changed_files}}</changed_files>
+        {{/if}}
         <created_at>{{this.pr.created_at}}</created_at>
         <updated_at>{{this.pr.updated_at}}</updated_at>
         <url>{{this.pr.html_url}}</url>

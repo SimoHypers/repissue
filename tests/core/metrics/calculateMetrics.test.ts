@@ -2,22 +2,20 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Mock tinypool before importing calculateMetrics ──────────────────────────
 // vi.mock is hoisted to the top of the file by Vitest's transformer, so this
-// runs before any imports. The factory must be synchronous — top-level await
-// breaks hoisting and causes "no default export" errors.
+// runs before any imports. The factory must be synchronous.
 //
-// tinypool exports Piscina as a NAMED export (not default), so the mock shape
-// must match: { Piscina: <constructor mock> }.
+// tinypool exports `Tinypool` as both a named export and the default export.
+// Our production code uses the named export: `import { Tinypool } from 'tinypool'`
+// so the mock must expose the same shape: { Tinypool: <constructor>, default: <constructor> }
 
 const mockRun = vi.fn();
 const mockDestroy = vi.fn();
 
 vi.mock('tinypool', () => {
-  // tinypool uses a default export: `import Piscina from 'tinypool'`
-  // The mock factory must return { default: <constructor> } to match.
-  function Piscina() {
+  function Tinypool() {
     return { run: mockRun, destroy: mockDestroy };
   }
-  return { default: Piscina };
+  return { Tinypool, default: Tinypool };
 });
 
 // Import AFTER vi.mock — Vitest's hoisting guarantees the mock is in place.

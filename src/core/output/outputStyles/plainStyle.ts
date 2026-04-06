@@ -50,7 +50,9 @@ export const plainTemplate = `📋 repissue — {{repo}}
   {{#if this.pr.draft}}🚧{{else}}🟢{{/if}} #{{this.pr.number}} — {{this.pr.title}}{{#if this.pr.draft}} [DRAFT]{{/if}}
   👤 Author  : {{userLogin this.pr.user}}
   🌿 Branch  : {{this.pr.base.ref}} ← {{this.pr.head.ref}}
+{{#if this.pr.changed_files}}
   📊 Diff    : ➕{{this.pr.additions}} ➖{{this.pr.deletions}} ({{this.pr.changed_files}} files)
+{{/if}}
   📅 Updated : {{formatDate this.pr.updated_at}}
   🔗 URL     : https://github.com/{{../repo}}/pull/{{this.pr.number}}
 {{#if this.pr.labels}}

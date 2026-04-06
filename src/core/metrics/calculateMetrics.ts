@@ -1,4 +1,4 @@
-import Piscina from "tinypool"
+import { Tinypool } from 'tinypool';
 import { logger } from '../../shared/logger.js';
 
 export interface MetricsResult {
@@ -8,7 +8,7 @@ export interface MetricsResult {
 
 /**
  * Count tokens in the rendered output string using tiktoken (cl100k_base)
- * running inside a tinypool worker thread, keeping the main thread free.
+ * running inside a Tinypool worker thread, keeping the main thread free.
  *
  * Falls back to the chars/4 estimate if the worker fails for any reason
  * (missing native module, WASM init error, etc.) so the CLI never crashes
@@ -22,7 +22,7 @@ export const calculateMetrics = async (output: string): Promise<MetricsResult> =
   // so the worker is at dist/core/metrics/workers/calculateMetricsWorker.js.
   const workerUrl = new URL('./workers/calculateMetricsWorker.js', import.meta.url);
 
-  const pool = new Piscina({
+  const pool = new Tinypool({
     filename: workerUrl.href,
     maxThreads: 1,   // one string, one worker is enough
     minThreads: 0,   // don't keep alive between pack() calls

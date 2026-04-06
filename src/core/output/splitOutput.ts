@@ -23,6 +23,11 @@ export const buildSplitFilePath = (basePath: string, index: number): string => {
 // These minimal templates render a single issue or PR in the target style.
 // They are intentionally kept in sync with the main output templates in
 // outputStyles/ — if you update the main templates, update these too.
+//
+// Note: the diff line (📊 / Changed files) is intentionally guarded by
+// {{#if pr.changed_files}} because the /pulls list endpoint does not return
+// additions/deletions/changed_files — those fields default to 0. Showing
+// "➕0 ➖0 across 0 file(s)" would be actively misleading.
 
 const ISSUE_TEMPLATES: Record<OutputConfig['style'], string> = {
   markdown: `### {{labelBadges issue.labels}}#{{issue.number}} — {{issue.title}}
@@ -104,7 +109,9 @@ const PR_TEMPLATES: Record<OutputConfig['style'], string> = {
   markdown: `### #{{pr.number}} — {{pr.title}}{{#if pr.draft}} [draft]{{/if}}
 
 **Author:** {{userLogin pr.user}} | **Base:** {{pr.base.ref}} | **Updated:** {{formatDate pr.updated_at}}
+{{#if pr.changed_files}}
 **Changed files:** {{pr.changed_files}} | **+{{pr.additions}} / -{{pr.deletions}}**
+{{/if}}
 {{#if crossRefs.closes}}
 **Closes:** {{joinNumbers crossRefs.closes}}
 {{/if}}
@@ -128,7 +135,7 @@ const PR_TEMPLATES: Record<OutputConfig['style'], string> = {
 
 `,
   plain: `#{{pr.number}} — {{pr.title}}{{#if pr.draft}} [DRAFT]{{/if}}
-Author: {{userLogin pr.user}} | Base: {{pr.base.ref}} | +{{pr.additions}} / -{{pr.deletions}}
+Author: {{userLogin pr.user}} | Base: {{pr.base.ref}}{{#if pr.changed_files}} | +{{pr.additions}} / -{{pr.deletions}}{{/if}}
 {{#if crossRefs.closes}}Closes: {{joinNumbers crossRefs.closes}}{{/if}}
 
 {{#if pr.body}}
@@ -152,9 +159,11 @@ Comments ({{comments.length}} shown{{#if filteredCommentCount}}, {{filteredComme
       <author>{{userLogin pr.user}}</author>
       <base_branch>{{pr.base.ref}}</base_branch>
       <head_branch>{{pr.head.ref}}</head_branch>
+      {{#if pr.changed_files}}
       <additions>{{pr.additions}}</additions>
       <deletions>{{pr.deletions}}</deletions>
       <changed_files>{{pr.changed_files}}</changed_files>
+      {{/if}}
       <created_at>{{pr.created_at}}</created_at>
       <updated_at>{{pr.updated_at}}</updated_at>
       <url>{{pr.html_url}}</url>

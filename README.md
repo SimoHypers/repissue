@@ -2,6 +2,10 @@
 
 > Pack GitHub Issues & Pull Requests into a single AI-ready context file.
 
+<div align="center">
+  <img src="public/assets/repissue-logo.svg" alt="repissue logo" width="200" />
+</div>
+
 [![npm version](https://img.shields.io/npm/v/repissue.svg)](https://www.npmjs.com/package/repissue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js ≥ 18](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org)
@@ -75,12 +79,12 @@ Requires **Node.js ≥ 18**.
 ## Quickstart
 
 ```bash
-# Fetch open issues and PRs from any public repo
-npx repissue facebook/react
+# Set your token first (see Rate Limits & Authentication below)
+export GITHUB_TOKEN=ghp_your_token_here        # bash/zsh
+$env:GITHUB_TOKEN="ghp_your_token_here"        # PowerShell
 
-# Authenticate for private repos (raises rate limit to 5,000 req/hr)
-GITHUB_TOKEN=ghp_xxx npx repissue my-org/private-repo   # bash/zsh
-$env:GITHUB_TOKEN="ghp_xxx"; npx repissue my-org/repo   # PowerShell
+# Fetch open issues and PRs
+npx repissue facebook/react
 
 # XML output — pairs perfectly with a Repomix XML snapshot
 npx repissue owner/repo --style xml
@@ -115,11 +119,6 @@ After running, repissue prints a summary:
 >
 > Without a token, GitHub allows only **60 requests per hour** — shared across your entire machine. A single run against a repo with 50+ issues will exhaust that quota immediately, locking you out for up to an hour. With a token, the limit rises to **5,000 requests per hour**, which is enough for any repo.
 >
-> ```bash
-> export GITHUB_TOKEN=ghp_your_token_here   # bash/zsh
-> $env:GITHUB_TOKEN="ghp_your_token_here"   # PowerShell
-> ```
->
 > See [Rate Limits & Authentication](#rate-limits--authentication) for full setup instructions.
 
 ---
@@ -138,7 +137,7 @@ After running, repissue prints a summary:
 | `--include-closed-days <n>` | — | Also include issues closed within the last N days |
 | `--label-priority <labels>` | `bug,security,P0` | Comma-separated labels to float to the top |
 | `--max-comments <n>` | `50` | Maximum comments to include per issue or PR |
-| `--no-bots` | — | Filter out all bot-authored comments |
+| `--no-bots` | — | Filter out all bot-authored issues, PRs, and comments |
 | `--header-text <text>` | — | Custom text embedded at the top of the output |
 | `-c, --config <path>` | auto | Path to `repissue.config.json` |
 | `--init` | — | Create a starter `repissue.config.json` in the current directory |
@@ -147,7 +146,6 @@ After running, repissue prints a summary:
 | `--split-output <bytes>` | — | Split output into multiple files if it exceeds N bytes |
 | `--copy` | — | Copy output to clipboard after writing |
 | `--security-check` | — | Warn if the output appears to contain secrets or credentials |
-| `--verbose` | — | Enable verbose logging |
 | `--quiet` | — | Suppress all output except errors |
 
 ### A few notes
@@ -236,14 +234,14 @@ Structured Markdown with collapsible `<details>` blocks per issue and PR. Readab
 
 ---
 
-> **Example output** *(rendered)*
+> **Example output** *(illustrative)*
 
 #### 📋 repissue — `facebook/react`
 
 | | |
 |---|---|
 | 🕐 **Generated** | 2026-04-03T14:22:00Z |
-| 📁 **Repository** | `facebook/react` |
+| 📁 **Repository** | [`facebook/react`](https://github.com/facebook/react) |
 | 🐛 **Open Issues** | 47 |
 | 🔀 **Open PRs** | 12 |
 
@@ -252,12 +250,12 @@ Structured Markdown with collapsible `<details>` blocks per issue and PR. Readab
 <details>
 <summary><strong>⚠️ <code>bug</code> &nbsp;#312</strong> — Auth token not refreshed on 401 &nbsp; <em>📅 2026-03-15 · 👤 alice · 💬 8</em></summary>
 
-🔗 **URL:** https://github.com/facebook/react/issues/312  
+🔗 **URL:** https://github.com/facebook/react/issues/312
 🔁 **Closes:** #318
 
 When the access token expires mid-session, the client throws an unhandled promise rejection rather than refreshing…
 
-**💬 Comments (3 shown, 5 filtered)**
+#### 💬 Comments (3 shown, 5 filtered)
 
 > 👤 **bob** · 📅 2026-03-16
 >
@@ -416,7 +414,7 @@ npx repissue owner/repo
 You can also pass it inline for a one-off run, though the token will be visible in your process list:
 
 ```bash
-npx repissue owner/repo --token ghp_xxx
+GITHUB_TOKEN=ghp_xxx npx repissue owner/repo
 ```
 
 Or store it in `repissue.config.json` — though the env var is strongly preferred to avoid accidentally committing credentials.
@@ -444,23 +442,3 @@ Detected patterns include: GitHub tokens, AWS access keys, API secret keys (`sk-
 ## License
 
 MIT License
-
-Copyright (c) 2026 repissue contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.

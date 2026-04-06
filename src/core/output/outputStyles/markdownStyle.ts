@@ -70,7 +70,9 @@ export const markdownTemplate = `# 📋 repissue — \`{{repo}}\`
 
 🔗 **URL:** https://github.com/{{../repo}}/pull/{{this.pr.number}}
 🌿 **Branch:** \`{{this.pr.base.ref}}\` ← \`{{this.pr.head.ref}}\`
+{{#if this.pr.changed_files}}
 📊 **Diff:** ➕{{this.pr.additions}} ➖{{this.pr.deletions}} across 📄 {{this.pr.changed_files}} file(s)
+{{/if}}
 {{#if this.pr.labels}}
 🏷️ **Labels:** {{labelBadges this.pr.labels}}
 {{/if}}

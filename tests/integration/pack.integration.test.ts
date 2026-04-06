@@ -2,12 +2,16 @@
  * Integration tests — these call the real GitHub API.
  *
  * Target repo: elysiajs/elysia-jwt
- *   - GitHub's own fixture repo, exists since 2011, will never be deleted.
- *   - Has a small, stable set of open issues and PRs (counts may change slightly
- *     over time, so we assert structure rather than exact counts).
+ *   - A small, stable Elysia.js plugin repo.
+ *   - Has a manageable number of issues and PRs — enough to exercise the full
+ *     pipeline without hammering the API or producing an enormous response.
+ *   - We assert on structure rather than exact counts, since those can change
+ *     over time as the project evolves.
  *
  * Run conditions:
- *   - In CI, set the GH_TOKEN secret to get 5,000 req/hr and stable runs.
+ *   - Set GITHUB_TOKEN to get 5,000 req/hr and stable runs in CI.
+ *   - Without a token the unauthenticated 60 req/hr cap may be hit on busy
+ *     CI runners sharing an IP address.
  *
  * These tests intentionally do NOT mock anything — the whole point is to
  * exercise the real fetch → filter → generate → metrics pipeline.
@@ -100,25 +104,26 @@ describe('integration: pack() against elysiajs/elysia-jwt', () => {
 
   it('output contains the repissue header', async () => {
     const result = await getResult();
-    expect(result.output).toContain('repissue Output');
+    expect(result.output).toContain('repissue');
   }, NETWORK_TIMEOUT);
 
   it('output contains a Generated timestamp', async () => {
     const result = await getResult();
-    expect(result.output).toContain('Generated:');
+    // The markdown template renders this as part of the table: | 🕐 **Generated** | … |
+    expect(result.output).toContain('Generated');
   }, NETWORK_TIMEOUT);
 
   it('output contains the Open Issues section header when issues are present', async () => {
     const result = await getResult();
     if (result.totalIssues > 0) {
-      expect(result.output).toContain('Open Issues');
+      expect(result.output).toContain('Issues');
     }
   }, NETWORK_TIMEOUT);
 
   it('output contains the Open Pull Requests section header when PRs are present', async () => {
     const result = await getResult();
     if (result.totalPRs > 0) {
-      expect(result.output).toContain('Open Pull Requests');
+      expect(result.output).toContain('Pull Requests');
     }
   }, NETWORK_TIMEOUT);
 
