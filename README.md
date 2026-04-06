@@ -20,6 +20,10 @@ npx repissue facebook/react
 # → repissue-output.md  (~28,400 tokens of structured issue/PR context)
 ```
 
+## Demo
+
+[![Watch the demo](https://img.youtube.com/vi/V--UGbznhuc/maxresdefault.jpg)](https://youtu.be/V--UGbznhuc)
+
 ---
 
 ## Table of Contents
