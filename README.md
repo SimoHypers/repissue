@@ -3,12 +3,14 @@
 > Pack GitHub Issues & Pull Requests into a single AI-ready context file.
 
 <div align="center">
-  <img src="public/assets/repissue-logo.svg" alt="repissue logo" width="200" />
+  <img src="public/assets/repissue-logo.svg" alt="repissue logo" width="400" />
 </div>
 
-[![npm version](https://img.shields.io/npm/v/repissue.svg)](https://www.npmjs.com/package/repissue)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js ≥ 18](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org)
+<div align="center">
+    [![npm version](https://img.shields.io/npm/v/repissue.svg)](https://www.npmjs.com/package/repissue)
+    [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+    [![Node.js ≥ 18](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org)
+</div>
 
 AI coding agents understand your code — but they have no idea what bugs are open, which PRs are in flight, or what discussions are happening in your issue tracker. **repissue** fills that gap.
 
