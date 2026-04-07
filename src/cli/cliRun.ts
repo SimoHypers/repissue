@@ -3,12 +3,13 @@ import { defaultAction } from './actions/defaultAction.js';
 import { initAction } from './actions/initAction.js';
 import { logger } from '../shared/logger.js';
 import type { CliOptions } from './types.js';
+import pkg from '../../package.json' with { type: 'json' };
 
 export const run = async (): Promise<void> => {
   program
     .name('repissue')
     .description('Pack GitHub Issues & PRs into a single AI-ready context file')
-    .version('0.1.0')
+    .version(pkg.version)
     .argument('[repo]', 'GitHub repository in owner/repo format')
     .option('-o, --output <path>', 'Output file path (default: repissue-output.{md,txt,xml} based on style)')
     .option('--style <format>', 'Output style: markdown | plain | xml (default: markdown)')
