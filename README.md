@@ -22,7 +22,7 @@ npx repissue facebook/react
 
 ## Demo
 
-[![Watch the demo](https://img.youtube.com/vi/V--UGbznhuc/maxresdefault.jpg)](https://youtu.be/V--UGbznhuc)
+[![Watch the demo](https://img.youtube.com/vi/V--UGbznhuc/hqdefault.jpg)](https://youtu.be/V--UGbznhuc)
 
 ---
 
